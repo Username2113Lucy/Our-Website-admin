@@ -13,7 +13,7 @@ export default function Adminpage() {
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden">
       
-      {/* Background Video */}
+      {/* Background Video
       <video
         autoPlay
         muted
@@ -22,7 +22,7 @@ export default function Adminpage() {
         className="absolute top-0 left-0 w-full h-full object-cover z-[-1] opacity-70"
       >
         <source src="/videos/bgvdo.mp4" type="video/mp4" />
-      </video>
+      </video> */}
 
       {/* Transparent Fullscreen Overlay with Watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
