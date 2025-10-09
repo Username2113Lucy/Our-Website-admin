@@ -10,6 +10,7 @@ import { Careersreg } from "./pages/Careersreg";
 import { Internshipreg } from "./pages/Internshipreg";
 import RDreg from "./pages/RDreg";
 import Coursereg from "./pages/Coursereg";
+import Ideaforge from "./pages/Ideaforge";
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/Course Registration" element={<Coursereg/>} />
         <Route path="/Internship Registration" element={<Internshipreg/>} />
         <Route path="/R & D Registration" element={<RDreg/>} />
+        <Route path="/IdeaForgeDetails" element={<Ideaforge/>} />
 
 
 

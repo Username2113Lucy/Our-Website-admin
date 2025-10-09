@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+
 
 export default function Adminpage() {
 
@@ -9,6 +11,8 @@ export default function Adminpage() {
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden">
@@ -27,9 +31,9 @@ export default function Adminpage() {
       {/* Transparent Fullscreen Overlay with Watermark */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
         <img
-          src="/image/sample logo.png"
+          src="/image/Lo.png"
           alt="Logo"
-          className="w-80 h-80 object-contain opacity-100"
+          className=" object-contain opacity-100"
         />
       </div>
 
@@ -46,9 +50,9 @@ export default function Adminpage() {
         {/* Left: Logo */}
         <div className="flex items-center">
           <img
-            src="/image/sample logo.png"
+            src="/image/Lo.png"
             alt="Logo"
-            className="w-25 h-25 object-contain opacity-90"
+            className="w-40 h-40 object-contain opacity-90"
           />
         </div>
 
@@ -154,6 +158,17 @@ export default function Adminpage() {
                     </div>
                   )}
                 </div>
+
+{/* Idea Forge */}
+<div>
+  <button
+    onClick={() => navigate('/IdeaForgeDetails')}
+    className="w-53 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
+  >
+    IDEA FORGE 
+  </button>
+</div>
+                
 
               </div>
 
