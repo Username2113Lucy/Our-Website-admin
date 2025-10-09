@@ -394,7 +394,7 @@ function Ideaforge() {
     <div className="absolute top-31.5 left-66 right-0 bottom-0 p-6 overflow-auto z-10 bg-black/70 text-white">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-yellow-500 mb-2">IdeaForge Admin Panel</h1>
+        <h1 className="text-2xl font-bold text-yellow-500 mb-2">Idea Forge Admin Panel</h1>
         <p className="text-gray-400">Manage all IdeaForge participant registrations</p>
       </div>
 
