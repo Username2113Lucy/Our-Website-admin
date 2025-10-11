@@ -24,7 +24,7 @@ function App() {
         <Route path="/InternDatabase" element={<Interndatabase/>} />
         <Route path="/CourseEntry" element={<Courseentry/>} />
         <Route path="/CourseDatabase" element={<Coursedatabase/>} />
-        <Route path="/Career Registration" element={<Careersreg/>} />
+        <Route path="/Careersreg" element={<Careersreg/>} />
         <Route path="/Course Registration" element={<Coursereg/>} />
         <Route path="/Internship Registration" element={<Internshipreg/>} />
         <Route path="/R & D Registration" element={<RDreg/>} />
