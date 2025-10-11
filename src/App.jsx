@@ -6,7 +6,7 @@ import Adminpage from "./components/Adminpage";
 import { Courseentry } from "./pages/Courseentry";
 import { Coursedatabase } from "./pages/Coursedatabase";
 import Internentry from "./pages/Internentry";
-import { Careersreg } from "./pages/Careersreg";
+import  Careersreg  from "./pages/Careersreg";
 import  Internshipreg  from "./pages/Internshipreg";
 import RDreg from "./pages/RDreg";
 import Coursereg from "./pages/Coursereg";
