@@ -94,7 +94,7 @@ export default function Adminpage() {
                   </Link>
                 </div>
 
-                <div>
+                {/* <div>
                   <button
                     onClick={() => toggleMenu("internship")}
                     className="w-53 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
@@ -111,10 +111,10 @@ export default function Adminpage() {
                       </Link>
                     </div>
                   )}
-                </div>
+                </div> */}
 
                 {/* Course Dropdown */}
-                <div>
+                {/* <div>
                   <button
                     onClick={() => toggleMenu("course")}
                     className="w-53 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
@@ -131,7 +131,7 @@ export default function Adminpage() {
                       </Link>
                     </div>
                   )}
-                </div>
+                </div> */}
 
                 {/* Course Dropdown */}
                 <div>
@@ -143,7 +143,7 @@ export default function Adminpage() {
                   </button>
                   {openMenu === "registration" && (
                     <div className="w-50 ml-4 mt-2 flex flex-col gap-2">
-                      <Link to='/Career Registration' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
+                      <Link to='/Careersreg' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
                         Careers
                       </Link>
                       <Link to='/Course Registration' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
@@ -152,9 +152,9 @@ export default function Adminpage() {
                       <Link to='/Internship Registration' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
                         Internship
                       </Link>
-                      <Link to='/R & D Registration' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
+                      {/* <Link to='/R & D Registration' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
                         R & D Projects
-                      </Link>
+                      </Link> */}
                     </div>
                   )}
                 </div>
