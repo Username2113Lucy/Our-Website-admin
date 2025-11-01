@@ -2,29 +2,44 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 
-
-export default function Adminpage() {
-
-
+export default function Adminpage({ user, onLogout }) {
   const [openMenu, setOpenMenu] = useState(null);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
+  const toggleAdminPanel = () => {
+    setShowAdminPanel(!showAdminPanel);
+  };
+
   const navigate = useNavigate();
+
+  // Close admin panel when clicking outside
+  const handleClickOutside = (e) => {
+    if (!e.target.closest('.admin-panel-container')) {
+      setShowAdminPanel(false);
+    }
+  };
+
+  // Add click outside listener
+  React.useEffect(() => {
+    if (showAdminPanel) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showAdminPanel]);
 
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden">
       
-      {/* Background Video
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute top-0 left-0 w-full h-full object-cover z-[-1] opacity-70"
-      >
+      {/* Background Video (commented out) */}
+      {/* <video autoPlay muted loop playsInline className="absolute top-0 left-0 w-full h-full object-cover z-[-1] opacity-70">
         <source src="/videos/bgvdo.mp4" type="video/mp4" />
       </video> */}
 
@@ -33,7 +48,7 @@ export default function Adminpage() {
         <img
           src="/image/Lo.png"
           alt="Logo"
-          className=" object-contain opacity-100"
+          className="object-contain opacity-100"
         />
       </div>
 
@@ -59,15 +74,80 @@ export default function Adminpage() {
         {/* Center: Slogan */}
         <div className="flex-1 flex justify-center">
           <h1 className="text-xl font-semibold text-center ml-[150px]">
-            EVERY CLICK CARRIES RESPONSIBLITY 
+            EVERY CLICK CARRIES RESPONSIBILITY 
           </h1>
         </div>
 
-        {/* Right: Admin Button */}
-        <div className="flex items-center">
-          <button className="text-white text-2xl font-bold w-60 h-10 flex items-center justify-center ">
-            ADMIN PANEL
-          </button>
+        {/* Right: Admin Panel Button with Dropdown */}
+        <div className="flex items-center admin-panel-container">
+          <div className="relative">
+<button 
+  onClick={toggleAdminPanel}
+  className="text-lg font-bold w-40 h-10 flex items-center justify-center bg-transparent text-white border-2 border-yellow-500 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
+>
+  ADMIN PANEL
+</button>
+            
+            {/* Admin Panel Dropdown */}
+            {showAdminPanel && (
+              <div className="absolute -right-6 top-12 w-80 bg-black/95 border-2 border-yellow-500 rounded-lg shadow-2xl z-50 p-4">
+                {/* User Info Section */}
+                {user ? (
+                  <>
+                    <div className="text-center mb-4">
+                      <div className="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <span className="text-black text-2xl font-bold">
+                          {user.username ? user.username.charAt(0).toUpperCase() : 'A'}
+                        </span>
+                      </div>
+                      <h3 className="text-yellow-500 font-bold text-lg">Welcome, {user.username}!</h3>
+                      <p className="text-white text-sm">Administrator</p>
+                    </div>
+
+    {/* User Details */}
+    <div className="space-y-2 mb-4">
+      <div className="flex justify-between border-b border-yellow-500/30 pb-1">
+        <span className="text-yellow-500">Username:</span> {/* Added this line */}
+        <span className="text-white">{user.username}</span> {/* Added this line */}
+      </div>
+      <div className="flex justify-between border-b border-yellow-500/30 pb-1">
+        <span className="text-yellow-500">Role:</span>
+        <span className="text-white">{user.role || 'Super Admin'}</span> {/* Updated this line */}
+      </div>
+      <div className="flex justify-between border-b border-yellow-500/30 pb-1">
+        <span className="text-yellow-500">Last Login:</span>
+        <span className="text-white">{new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}</span>
+      </div>
+      <div className="flex justify-between border-b border-yellow-500/30 pb-1">
+        <span className="text-yellow-500">Status:</span>
+        <span className="text-green-500 animate-pulse">● Online</span>
+      </div>
+    </div>
+
+{/* Action Buttons */}
+<div className="space-y-2 flex justify-center">
+  <button 
+    onClick={onLogout}
+    className="w-20 bg-transparent text-red-500 border-2 border-red-500 font-bold py-2 rounded-lg hover:text-white hover:bg-red-500 transition-all duration-300 text-sm"
+  >
+    LOG OUT
+  </button>
+</div>
+                  </>
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-yellow-500 mb-2">Not Logged In</p>
+                    <button 
+                      onClick={() => navigate('/login')}
+                      className="btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-2 px-4 rounded-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
+                    >
+                      LOGIN
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -81,100 +161,54 @@ export default function Adminpage() {
           <div className="w-[2px] h-full bg-yellow-500 absolute right-[2px]"></div>
         </div>
 
+        <div className="flex flex-col gap-4 w-64">
+          {/* Dashboard Button */}
+          <div>
+            <Link
+              to="/" 
+              onClick={() => setOpenMenu(null)} 
+              className="w-53 block text-center btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
+            >
+              DASHBOARD
+            </Link>
+          </div>
 
-          <div className="flex flex-col gap-4 w-64">
-                {/* Internship Dropdown */}
-
-                <div>
-                  <Link
-                    to="/" onClick={() => setOpenMenu(null)} 
-                    className="w-53 block text-center btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
-                  >
-                    DASHBOARD
-                  </Link>
-                </div>
-
-                {/* <div>
-                  <button
-                    onClick={() => toggleMenu("internship")}
-                    className="w-53 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
-                  >
-                    INTERNSHIP ⮛
-                  </button>
-                  {openMenu === "internship" && (
-                    <div className="ml-4 mt-2 flex flex-col gap-2">
-                      <Link to='/InternEntry' className="w-50 block text-center btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
-                        Student Intern Entry
-                      </Link>
-                      <Link to='/InternDatabase' className="w-50 block text-center btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
-                        Intern Database
-                      </Link>
-                    </div>
-                  )}
-                </div> */}
-
-                {/* Course Dropdown */}
-                {/* <div>
-                  <button
-                    onClick={() => toggleMenu("course")}
-                    className="w-53 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
-                  >
-                    COURSE ⮛
-                  </button>
-                  {openMenu === "course" && (
-                    <div className="w-50 ml-4 mt-2 flex flex-col gap-2">
-                      <Link to='/CourseEntry' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
-                        Student Course Entry
-                      </Link>
-                      <Link to='CourseDatabase' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
-                        Course Database
-                      </Link>
-                    </div>
-                  )}
-                </div> */}
-
-                {/* Course Dropdown */}
-                <div>
-                  <button
-                    onClick={() => toggleMenu("registration")}
-                    className="w-53 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
-                  >
-                    REGISTRATION ⮛
-                  </button>
-                  {openMenu === "registration" && (
-                    <div className="w-50 ml-4 mt-2 flex flex-col gap-2">
-                      <Link to='/Careersreg' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
-                        Careers
-                      </Link>
-                      <Link to='/Course Registration' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
-                        Courses
-                      </Link>
-                      <Link to='/Internship Registration' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
-                        Internship
-                      </Link>
-                      {/* <Link to='/R & D Registration' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
-                        R & D Projects
-                      </Link> */}
-                    </div>
-                  )}
-                </div>
-
-{/* Idea Forge */}
-<div>
-  <button
-    onClick={() => navigate('/IdeaForgeDetails')}
-    className="w-53 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
-  >
-    IDEA FORGE 
-  </button>
-</div>
-                
-
+          {/* Registration Dropdown */}
+          <div>
+            <button
+              onClick={() => toggleMenu("registration")}
+              className="w-53 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
+            >
+              REGISTRATION ⮛
+            </button>
+            {openMenu === "registration" && (
+              <div className="w-50 ml-4 mt-2 flex flex-col gap-2">
+                <Link to='/Careersreg' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
+                  Careers
+                </Link>
+                <Link to='/Course Registration' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
+                  Courses
+                </Link>
+                <Link to='/Internship Registration' className="btn-glowing block text-center bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-1 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300">
+                  Internship
+                </Link>
               </div>
+            )}
+          </div>
 
+          {/* Idea Forge */}
+          <div>
+            <button
+              onClick={() => navigate('/IdeaForgeDetails')}
+              className="w-53 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
+            >
+              IDEA FORGE 
+            </button>
+          </div>
+        </div>
       </div>
 
-          {/* Add this style tag for the glowing effect */}
+      {/* Add this style tag for the glowing effect */}
       <style>{`
         .btn-glowing {
           position: relative;
@@ -246,8 +280,6 @@ export default function Adminpage() {
           }
         }
       `}</style>
-
     </div>
   );
 }
-
