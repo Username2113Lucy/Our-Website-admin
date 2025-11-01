@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 
 const Login = ({ setIsAuthenticated, setUser }) => {
   const [username, setUsername] = useState('');
@@ -8,37 +7,98 @@ const Login = ({ setIsAuthenticated, setUser }) => {
   const [error, setError] = useState('');
   const [attempts, setAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
   const navigate = useNavigate();
 
-const users = [
-
+  const users = [
     { username: 'VSVetrian', password: '04910#VTS', role: 'Super Admin' },
+  ];
 
-//   { 
-//     username: import.meta.env.VITE_ADMIN_1_USERNAME, 
-//     password: import.meta.env.VITE_ADMIN_1_PASSWORD, 
-//     role: import.meta.env.VITE_ADMIN_1_ROLE 
-//   },
-//   // You can add more users like this:
-//   {
-//     username: import.meta.env.VITE_ADMIN_2_USERNAME, 
-//     password: import.meta.env.VITE_ADMIN_2_PASSWORD, 
-//     role: import.meta.env.VITE_ADMIN_2_ROLE
-//   }
-];
+  const maxAttempts = 3;
+  const lockoutTime = 300000; // 5 minutes = 300,000 ms
 
-  const maxAttempts = 3; // Maximum allowed attempts
-  const lockoutTime = 30000; // 30 seconds lockout
+  // Format time as mm:ss min or ss sec
+  const formatTime = (seconds) => {
+    if (seconds >= 60) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')} min`;
+    } else {
+      return `${seconds.toString().padStart(2, '0')} sec`;
+    }
+  };
+
+  // Separate function to handle normal attempt errors
+  const showAttemptError = (remainingAttempts) => {
+    setError(`Invalid Credentials. ${remainingAttempts} attempts remaining.`);
+    // No auto-clear - stays forever until correct password or lockout
+  };
+
+  // Separate function to handle lockout errors
+  const showLockoutError = (time) => {
+    setError(`Too many failed attempts! Account locked for ${formatTime(time)}.`);
+  };
+
+  // Load attempts and lock status from localStorage on component mount
+  useEffect(() => {
+    const savedAttempts = localStorage.getItem('loginAttempts');
+    const savedLockStatus = localStorage.getItem('isLocked');
+    const savedLockTime = localStorage.getItem('lockTime');
+    
+    if (savedAttempts) {
+      setAttempts(parseInt(savedAttempts));
+    }
+    
+    if (savedLockStatus === 'true') {
+      const lockTime = parseInt(savedLockTime);
+      const currentTime = new Date().getTime();
+      const timeElapsed = currentTime - lockTime;
+      
+      if (timeElapsed < lockoutTime) {
+        // Still locked
+        setIsLocked(true);
+        const remainingTime = lockoutTime - timeElapsed;
+        const initialTimeLeft = Math.ceil(remainingTime / 1000);
+        setTimeLeft(initialTimeLeft);
+        showLockoutError(initialTimeLeft);
+        
+        // Start countdown
+        const interval = setInterval(() => {
+          setTimeLeft(prev => {
+            const newTime = prev - 1;
+            if (newTime <= 0) {
+              clearInterval(interval);
+              handleUnlock();
+              return 0;
+            }
+            return newTime;
+          });
+        }, 1000);
+
+        return () => clearInterval(interval);
+      } else {
+        // Lock time expired
+        handleUnlock();
+      }
+    }
+  }, []);
+
+  const handleUnlock = () => {
+    setIsLocked(false);
+    setAttempts(0);
+    setTimeLeft(0);
+    localStorage.removeItem('isLocked');
+    localStorage.removeItem('lockTime');
+    localStorage.removeItem('loginAttempts');
+    setError('');
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
     
     // Check if account is locked
     if (isLocked) {
-      setError('Account temporarily locked. Please try again later.');
-      setTimeout(() => {
-        setError('');
-      }, 5000);
+      showLockoutError(timeLeft);
       return;
     }
     
@@ -51,6 +111,7 @@ const users = [
       // Reset attempts on successful login
       setAttempts(0);
       setIsLocked(false);
+      setTimeLeft(0);
       setIsAuthenticated(true);
       setUser({ 
         username: matchedUser.username, 
@@ -61,37 +122,62 @@ const users = [
         username: matchedUser.username, 
         role: matchedUser.role 
       }));
+      // Clear login attempt data
+      localStorage.removeItem('loginAttempts');
+      localStorage.removeItem('isLocked');
+      localStorage.removeItem('lockTime');
       navigate('/');
       setError('');
     } else {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
+      // Save attempts to localStorage
+      localStorage.setItem('loginAttempts', newAttempts.toString());
       
       if (newAttempts >= maxAttempts) {
-        setError(`Too many failed attempts! Account locked for ${lockoutTime/1000} seconds.`);
+        const initialTime = Math.ceil(lockoutTime / 1000);
+        setTimeLeft(initialTime);
         setIsLocked(true);
-        // Auto unlock after lockout time
-        setTimeout(() => {
-          setIsLocked(false);
-          setAttempts(0);
-          setError('');
-        }, lockoutTime);
+        // Save lock status and time to localStorage
+        localStorage.setItem('isLocked', 'true');
+        localStorage.setItem('lockTime', new Date().getTime().toString());
+        
+        // Show lockout error
+        showLockoutError(initialTime);
+        
+        // Start countdown timer
+        const interval = setInterval(() => {
+          setTimeLeft(prev => {
+            const newTime = prev - 1;
+            if (newTime <= 0) {
+              clearInterval(interval);
+              handleUnlock();
+              return 0;
+            }
+            return newTime;
+          });
+        }, 1000);
+
+        return () => clearInterval(interval);
       } else {
-        setError(`Invalid Credentials. ${maxAttempts - newAttempts} attempts remaining.`);
+        // Show normal attempt error (stays forever)
+        showAttemptError(maxAttempts - newAttempts);
       }
-      
-      // Auto clear error after 5 seconds
-      setTimeout(() => {
-        setError('');
-      }, 5000);
     }
   };
 
+  // Update lockout error message when timeLeft changes
+  useEffect(() => {
+    if (isLocked && timeLeft > 0) {
+      showLockoutError(timeLeft);
+    }
+  }, [timeLeft, isLocked]);
+
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center relative">
+    <div className="h-screen bg-black flex items-center justify-center relative overflow-hidden">
       {/* Background Logo - Bigger and with round border */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-        <div className="p-38 rounded-full border-4 border-yellow-500/30">
+        <div className="rounded-full border-4 border-yellow-500/30">
           <img
             src="/image/Lo.png"
             alt="Logo"
@@ -108,6 +194,7 @@ const users = [
           <img
             src="/image/Head_Lo.png"
             alt="Company Logo"
+            draggable="false"
             className="w-32 h-32 object-contain"
           />
         </div>
@@ -173,8 +260,6 @@ const users = [
               Attempts: {attempts}/{maxAttempts}
             </div>
           )}
-
-
         </form>
 
         <style>{`
