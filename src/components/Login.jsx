@@ -11,17 +11,20 @@ const Login = ({ setIsAuthenticated, setUser }) => {
   const navigate = useNavigate();
 
 const users = [
-  { 
-    username: import.meta.env.VITE_ADMIN_1_USERNAME, 
-    password: import.meta.env.VITE_ADMIN_1_PASSWORD, 
-    role: import.meta.env.VITE_ADMIN_1_ROLE 
-  },
-  // You can add more users like this:
-  {
-    username: import.meta.env.VITE_ADMIN_2_USERNAME, 
-    password: import.meta.env.VITE_ADMIN_2_PASSWORD, 
-    role: import.meta.env.VITE_ADMIN_2_ROLE
-  }
+
+    { username: 'VSVetrian', password: '04910#VTS', role: 'Super Admin' },
+
+//   { 
+//     username: import.meta.env.VITE_ADMIN_1_USERNAME, 
+//     password: import.meta.env.VITE_ADMIN_1_PASSWORD, 
+//     role: import.meta.env.VITE_ADMIN_1_ROLE 
+//   },
+//   // You can add more users like this:
+//   {
+//     username: import.meta.env.VITE_ADMIN_2_USERNAME, 
+//     password: import.meta.env.VITE_ADMIN_2_PASSWORD, 
+//     role: import.meta.env.VITE_ADMIN_2_ROLE
+//   }
 ];
 
   const maxAttempts = 3; // Maximum allowed attempts
