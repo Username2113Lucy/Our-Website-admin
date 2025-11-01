@@ -126,12 +126,12 @@ export default function Adminpage({ user, onLogout }) {
 
 {/* Action Buttons */}
 <div className="space-y-2 flex justify-center">
-  <button 
-    onClick={onLogout}
-    className="w-20 bg-transparent text-red-500 border-2 border-red-500 font-bold py-2 rounded-lg hover:text-white hover:bg-red-500 transition-all duration-300 text-sm"
-  >
-    LOG OUT
-  </button>
+<button 
+  onClick={onLogout}
+  className="w-20 bg-transparent text-red-500 border-2 border-red-500 font-bold py-2 rounded-lg hover:text-white hover:bg-red-500 transition-all duration-300 text-sm"
+>
+  LOG OUT
+</button>
 </div>
                   </>
                 ) : (

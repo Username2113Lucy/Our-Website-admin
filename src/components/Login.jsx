@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ setIsAuthenticated, setUser }) => {
+const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [attempts, setAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const users = [
@@ -31,7 +32,6 @@ const Login = ({ setIsAuthenticated, setUser }) => {
   // Separate function to handle normal attempt errors
   const showAttemptError = (remainingAttempts) => {
     setError(`Invalid Credentials. ${remainingAttempts} attempts remaining.`);
-    // No auto-clear - stays forever until correct password or lockout
   };
 
   // Separate function to handle lockout errors
@@ -93,59 +93,73 @@ const Login = ({ setIsAuthenticated, setUser }) => {
     setError('');
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    console.log('🔄 Login button clicked');
     
     // Check if account is locked
     if (isLocked) {
+      console.log('🔒 Account is locked');
       showLockoutError(timeLeft);
       return;
     }
+    
+    setIsLoading(true);
+    console.log('🔍 Checking credentials...');
     
     // Check if credentials match any user in the dictionary
     const matchedUser = users.find(user => 
       user.username === username && user.password === password
     );
     
+    console.log('👤 Matched user:', matchedUser);
+    
     if (matchedUser) {
+      console.log('✅ Credentials matched, proceeding with login...');
+      
       // Reset attempts on successful login
       setAttempts(0);
       setIsLocked(false);
       setTimeLeft(0);
-      setIsAuthenticated(true);
-      setUser({ 
-        username: matchedUser.username, 
-        role: matchedUser.role 
-      });
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('user', JSON.stringify({ 
-        username: matchedUser.username, 
-        role: matchedUser.role 
-      }));
-      // Clear login attempt data
-      localStorage.removeItem('loginAttempts');
-      localStorage.removeItem('isLocked');
-      localStorage.removeItem('lockTime');
-      navigate('/');
-      setError('');
+      
+      try {
+        // Call the onLogin prop from App.jsx
+        console.log('🚀 Calling onLogin function...');
+        onLogin({ 
+          username: matchedUser.username, 
+          role: matchedUser.role 
+        });
+        
+        console.log('✅ Login function completed, clearing attempt data...');
+        
+        // Clear login attempt data
+        localStorage.removeItem('loginAttempts');
+        localStorage.removeItem('isLocked');
+        localStorage.removeItem('lockTime');
+        
+        console.log('🔄 Navigating to dashboard...');
+        navigate('/');
+        setError('');
+      } catch (error) {
+        console.error('❌ Error during login:', error);
+        setError('Login failed. Please try again.');
+      }
     } else {
+      console.log('❌ Invalid credentials');
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
-      // Save attempts to localStorage
       localStorage.setItem('loginAttempts', newAttempts.toString());
       
       if (newAttempts >= maxAttempts) {
+        console.log('🔒 Maximum attempts reached, locking account...');
         const initialTime = Math.ceil(lockoutTime / 1000);
         setTimeLeft(initialTime);
         setIsLocked(true);
-        // Save lock status and time to localStorage
         localStorage.setItem('isLocked', 'true');
         localStorage.setItem('lockTime', new Date().getTime().toString());
         
-        // Show lockout error
         showLockoutError(initialTime);
         
-        // Start countdown timer
         const interval = setInterval(() => {
           setTimeLeft(prev => {
             const newTime = prev - 1;
@@ -160,10 +174,11 @@ const Login = ({ setIsAuthenticated, setUser }) => {
 
         return () => clearInterval(interval);
       } else {
-        // Show normal attempt error (stays forever)
         showAttemptError(maxAttempts - newAttempts);
       }
     }
+    
+    setIsLoading(false);
   };
 
   // Update lockout error message when timeLeft changes
@@ -225,7 +240,7 @@ const Login = ({ setIsAuthenticated, setUser }) => {
               className="w-full bg-black border-2 border-yellow-500 text-white px-3 py-2 rounded-lg focus:outline-none focus:border-yellow-300"
               placeholder="Enter username"
               required
-              disabled={isLocked}
+              disabled={isLocked || isLoading}
             />
           </div>
 
@@ -240,17 +255,19 @@ const Login = ({ setIsAuthenticated, setUser }) => {
               className="w-full bg-black border-2 border-yellow-500 text-white px-3 py-2 rounded-lg focus:outline-none focus:border-yellow-300"
               placeholder="Enter password"
               required
-              disabled={isLocked}
+              disabled={isLocked || isLoading}
             />
           </div>
 
           <div className="flex justify-center">
             <button
               type="submit"
-              className="w-30 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isLocked}
+              className={`w-30 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300 ${
+                isLoading || isLocked ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              disabled={isLocked || isLoading}
             >
-              {isLocked ? 'LOCKED' : 'LOGIN'}
+              {isLoading ? 'PROCESSING...' : isLocked ? 'LOCKED' : 'LOGIN'}
             </button>
           </div>
 
