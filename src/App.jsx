@@ -12,6 +12,7 @@ import RDreg from "./pages/RDreg";
 import Coursereg from "./pages/Coursereg";
 import Ideaforge from "./pages/Ideaforge";
 import Login from "./components/Login";
+import Billing from "./pages/Billing";
 
 // useAuth hook directly in App.jsx
 const useAuth = () => {
@@ -105,6 +106,7 @@ function App() {
               <Route path="/Internship Registration" element={<Internshipreg />} />
               <Route path="/R & D Registration" element={<RDreg />} />
               <Route path="/IdeaForgeDetails" element={<Ideaforge />} />
+              <Route path="/Billing" element={<Billing />} />
             </Routes>
           </>
         ) : (

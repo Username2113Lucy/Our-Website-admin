@@ -205,6 +205,16 @@ export default function Adminpage({ user, onLogout }) {
               IDEA FORGE 
             </button>
           </div>
+
+          {/* Billing */}
+          <div>
+            <button
+              onClick={() => navigate('/Billing')}
+              className="w-53 btn-glowing bg-transparent text-yellow-500 border-2 border-yellow-500 font-bold py-3 rounded-lg shadow-lg hover:text-black hover:bg-yellow-500 transition-all duration-300"
+            >
+              BILLING 
+            </button>
+          </div>
         </div>
       </div>
 
